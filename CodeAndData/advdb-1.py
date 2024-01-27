@@ -1,34 +1,76 @@
 # Adv DB Winter 2024 - 1
-
 import random
+from log import Log
 
 data_base = []  # Global binding for the Database contents
 '''
-transactions = [['id1',' attribute2', 'value1'], ['id2',' attribute2', 'value2'],
+transactions = [['id1',' attribute1', 'value1'], ['id2',' attribute2', 'value2'],
                 ['id3', 'attribute3', 'value3']]
 '''
 transactions = [['1', 'Department', 'Music'], ['5', 'Civil_status', 'Divorced'],
                 ['15', 'Salary', '200000']]
-DB_Log = [] # <-- You WILL populate this as you go
+DB_Log: list[Log] = [] # <-- You WILL populate this as you go
 
-def recovery_script(log:list):  #<--- Your CODE
+schema = None
+
+def get_schema(data: list) -> dict:
+    '''
+    Returns a dictionary representing the schema of the provided data.
+    It expects the first row of the data to be the schema.
+    '''
+    global schema
+    if schema != None:
+        return schema
+    
+    schema = {}
+    for i in range(len(data[0])):
+        schema[data[0][i]] = i
+    return schema
+
+def recovery_script(log: list[Log]) -> None:  #<--- Your CODE
     '''
     Restore the database to stable and sound condition, by processing the DB log.
     '''
     print("Calling your recovery script with DB_Log as an argument.")
     print("Recovery in process ...\n")
-    pass
 
-def transaction_processing(): #<-- Your CODE
+    schema = get_schema(data_base)
+    last_log = log[len(log) - 1]
+    last_log.status = False
+
+    person_id = last_log.person_id
+    attribute = last_log.attribute
+    before_value = last_log.before_value
+    after_value = last_log.after_value
+
+    data_base[person_id][schema[attribute]] = before_value
+
+    print(f'Attribute "{attribute}" where Unique_ID = "{person_id}" rolled back',
+        f'from "{after_value}" to "{before_value}"\n')
+
+def transaction_processing() -> None: #<-- Your CODE
+    schema = get_schema(data_base)
+
+    transaction = transactions.pop(0);
+    person_id = int(transaction[0]);
+    attribute = transaction[1];
+    before_value = data_base[person_id][schema[attribute]]
+    after_value = transaction[2];
+
+    data_base[person_id][schema[attribute]] = after_value;
+    log = Log(person_id, attribute, before_value, after_value, True)
+
+    DB_Log.append(log)
+
+    transactions.append(transaction)
+
     '''
     1. Process transaction in the transaction queue.
     2. Updates DB_Log accordingly
     3. This function does NOT commit the updates, just execute them
-    '''
-    pass
-    
+    ''' 
 
-def read_file(file_name:str)->list:
+def read_file(file_name: str) -> list:
     '''
     Read the contents of a CSV file line-by-line and return a list of lists
     '''
@@ -52,7 +94,7 @@ def read_file(file_name:str)->list:
     print(f"\nThere are {size} records in the database, including one header.\n")
     return data
 
-def is_there_a_failure()->bool:
+def is_there_a_failure() -> bool:
     '''
     Simulates randomly a failure, returning True or False, accordingly
     '''
@@ -63,16 +105,19 @@ def is_there_a_failure()->bool:
         result = False
     return result
 
-def main():
+def main() -> None:
     number_of_transactions = len(transactions)
     must_recover = False
-    data_base = read_file('Employees_DB_ADV.csv')
+    global data_base
+    data_base = read_file('CodeAndData/Employees_DB_ADV.csv')
     failure = is_there_a_failure()
     failing_transaction_index = None
+
     while not failure:
         # Process transaction
         for index in range(number_of_transactions):
-            print(f"\nProcessing transaction No. {index+1}.")    #<--- Your CODE (Call function transaction_processing)
+            print(f"\nProcessing transaction No. {index+1}.")
+            transaction_processing()   #<--- Your CODE (Call function transaction_processing)
             print("UPDATES have not been committed yet...\n")
             failure = is_there_a_failure()
             if failure:
@@ -82,9 +127,8 @@ def main():
                 break
             else:
                 print(f'Transaction No. {index+1} has been commited! Changes are permanent.')
-                
     if must_recover:
-        #Call your recovery script
+        # Call your recovery script
         recovery_script(DB_Log) ### Call the recovery function to restore DB to sound state
     else:
         # All transactiones ended up well
@@ -94,7 +138,9 @@ def main():
     print('The data entries AFTER updates -and RECOVERY, if necessary- are presented below:')
     for item in data_base:
         print(item)
+
+    print('\nLogs:\n')
+    for log in DB_Log:
+        print(log)
     
 main()
-
-
