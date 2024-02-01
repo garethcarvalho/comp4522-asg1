@@ -1,5 +1,6 @@
 # Adv DB Winter 2024 - 1
 import random
+import os
 from log import Log
 
 data_base = []  # Global binding for the Database contents
@@ -94,6 +95,26 @@ def read_file(file_name: str) -> list:
     print(f"\nThere are {size} records in the database, including one header.\n")
     return data
 
+def write_data(file_name: str) -> None:
+    with open(file_name, 'w') as data_file:
+        for item in data_base:
+            size = len(item)
+            for i in range(size):
+                data_file.write(str(item[i]))
+                if i + 1 < size:
+                    data_file.write(',')
+            data_file.write('\n')
+    
+    log_path = file_name.split('.')[0] + '_Logs.csv'
+
+    with open(log_path, 'w') as log_file:
+        log_file.write(Log.get_log_schema())
+        log_file.write('\n')
+        for log in DB_Log:
+            log_file.write(log.get_csv_format())
+            log_file.write('\n')
+
+
 def is_there_a_failure() -> bool:
     '''
     Simulates randomly a failure, returning True or False, accordingly
@@ -142,5 +163,9 @@ def main() -> None:
     print('\nLogs:\n')
     for log in DB_Log:
         print(log)
+    
+    # commit the data
+    write_data('CodeAndData/new_database.csv')
+
     
 main()
