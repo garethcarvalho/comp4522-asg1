@@ -34,3 +34,5 @@ This is a sample of what it looks like when a failure occurs:
 ![Sample Output](./images/output-sample.png)
 
 In the terminal, there were also entries that showed the data before it was changed, but it was too far to scroll. This was present in the starter code and remains unchanged.
+
+That's all there is to my Logging and Rollback system.
