@@ -3,7 +3,7 @@ import time
 class Log:
     log_count: int = 0
 
-    def __init__(self, person_id: int, attribute: str, before_value: str | int, after_value: str | int, status: bool):
+    def __init__(self, person_id: int, attribute: str, before_value: str | int, after_value: str | int, status: bool) -> None:
         self.transaction_id = Log.get_next_transaction_id()
         self.person_id = person_id
         self.attribute = attribute
@@ -11,7 +11,7 @@ class Log:
         self.after_value = after_value
         self.status = status
 
-    def __str__(self):
+    def __str__(self) -> str:
         string = f'[ ({self.transaction_id}) | Path: "Employees/{self.person_id}" | {self.attribute}: "{self.before_value}" -> "{self.after_value}" | Completed: {self.status} ]'
         return string
     
@@ -31,11 +31,4 @@ class Log:
     
     @staticmethod
     def get_log_schema() -> str:
-        schema = ["transaction_id", "person_id", "attribute", "before_value", "after_value", "completed"]
-        schema_str = ''
-        size = len(schema)
-        for i in range(size):
-            schema_str += schema[i]
-            if i + 1 < size:
-                schema_str += ','
-        return schema_str
+        return "transaction_id,person_id,attribute,before_value,after_value,completed"

@@ -95,7 +95,7 @@ def read_file(file_name: str) -> list:
     print(f"\nThere are {size} records in the database, including one header.\n")
     return data
 
-def write_data(file_name: str) -> None:
+def commit_data(file_name: str) -> None:
     with open(file_name, 'w') as data_file:
         for item in data_base:
             size = len(item)
@@ -104,8 +104,9 @@ def write_data(file_name: str) -> None:
                 if i + 1 < size:
                     data_file.write(',')
             data_file.write('\n')
-    
-    log_path = file_name.split('.')[0] + '_Logs.csv'
+
+def write_logs(database_file_name: str) -> None:
+    log_path = database_file_name.split('.')[0] + '_Logs.csv'
 
     with open(log_path, 'w') as log_file:
         log_file.write(Log.get_log_schema())
@@ -113,7 +114,7 @@ def write_data(file_name: str) -> None:
         for log in DB_Log:
             log_file.write(log.get_csv_format())
             log_file.write('\n')
-
+    
 
 def is_there_a_failure() -> bool:
     '''
@@ -129,8 +130,12 @@ def is_there_a_failure() -> bool:
 def main() -> None:
     number_of_transactions = len(transactions)
     must_recover = False
+
+    database_file_name = 'new_database.csv'
+
     global data_base
-    data_base = read_file('CodeAndData/Employees_DB_ADV.csv')
+    data_base = read_file('Employees_DB_ADV.csv')
+
     failure = is_there_a_failure()
     failing_transaction_index = None
 
@@ -147,10 +152,13 @@ def main() -> None:
                 print(f'There was a failure whilst processing transaction No. {failing_transaction_index}.')
                 break
             else:
+                commit_data(database_file_name) # Commit data to secondary memory.
+                write_logs(database_file_name) # Write the logs to a file
                 print(f'Transaction No. {index+1} has been commited! Changes are permanent.')
     if must_recover:
         # Call your recovery script
         recovery_script(DB_Log) ### Call the recovery function to restore DB to sound state
+        write_logs(database_file_name) # Update the logs to reflect the rollback
     else:
         # All transactiones ended up well
         print("All transaction ended up well.")
@@ -163,9 +171,6 @@ def main() -> None:
     print('\nLogs:\n')
     for log in DB_Log:
         print(log)
-    
-    # commit the data
-    write_data('CodeAndData/new_database.csv')
 
     
 main()

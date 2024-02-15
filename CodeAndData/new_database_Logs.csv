@@ -1,4 +1,0 @@
-transaction_id,person_id,attribute,before_value,after_value,completed
-17068155300,1,Department,Projects,Music,True
-17068155301,5,Civil_status,Married,Divorced,True
-17068155302,15,Salary,321000,200000,False
