@@ -21,7 +21,7 @@ For the logs, I created a class titled `Log` in the `log.py` file. A `Log` is ma
 - `after_value` (`int | str`) - the value of the attribute after it was changed.
 - `status` (`bool`) - the status of the transaction. Is `True` if successful, and `False` if not.
 
-The data stucture that I have in main memory to represent the logs is simply a `List` of the `Log` class.
+The data stucture that I have in main memory to represent the logs is simply a `List` of the `Log` class. This is because I designed the `Log` class to contain all the data needed for a single log, so all I needed was a list of them.
 
 ### Rolling Back
 
