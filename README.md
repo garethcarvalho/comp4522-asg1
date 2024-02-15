@@ -25,7 +25,7 @@ The data stucture that I have in main memory to represent the logs is simply a `
 
 ### Rolling Back
 
-When a failure occurs, it happens at a point in time where the data in the main memory has changed and a log has been created, but it has not been committed to secondary memory. To handle the failure, we look at the most recent `Log` in the log list, and reverse the transaction in the main memory using the `attribute`, `before_value`, `after_value` and `person_id` properties of the `Log`.
+When a failure occurs, it happens at a point in time where the data in the main memory has changed and a log has been created, but the data has not been committed to secondary memory. To handle the failure, the program looks at the most recent `Log` in the log list, and reverse the transaction in the main memory using the `attribute`, `before_value`, `after_value` and `person_id` properties of the `Log`.
 
 After the transaction is reversed, the status of the `Log` is set to `False`, as the transaction failed to complete.
 
@@ -33,6 +33,8 @@ This is a sample of what it looks like when a failure occurs:
 
 ![Sample Output](./images/output-sample.png)
 
-In the terminal, there were also entries that showed the data before it was changed, but it was too far to scroll. This was present in the starter code and remains unchanged.
+Note how there is a detailed message when the failure happens as to what was rolled back, where the transaction originally took place, and what the value of the attribute was rolled back to and from.
+
+In the terminal, there were also entries that showed the data before it was changed, but it was too far up to capture in this screenshot. This was present in the starter code and remains unchanged, and should appear in the terminal when testing the program.
 
 That's all there is to my Logging and Rollback system.
