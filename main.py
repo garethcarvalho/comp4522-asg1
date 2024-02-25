@@ -159,7 +159,8 @@ def main() -> None:
     global data_base # I pull the data_base in here globally because otherwise it just create a new local variable.
     data_base = read_file('Employees_DB_ADV.csv')
 
-    failure = is_there_a_failure()
+    # failure = is_there_a_failure()
+    failure = False
     failing_transaction_index = None
 
     while not failure:
